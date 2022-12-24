@@ -6,15 +6,11 @@ var count = 0
 for _ in (0..<num) {
     let word = readLine()!
     var prev: [Character: Int] = [:]
-    var flag = true
-    word.enumerated().forEach { (index, element) in
-        if let prev = prev[element], prev != index-1 {
-            flag = false
-            return
-        }
+    for (index, element) in word.enumerated() {
+        if let tmp = prev[element], tmp != index-1 { break }
         prev[element] = index
+        if index == word.count-1 { count += 1 }
     }
-    if flag { count += 1 }
 }
 
 print(count)
