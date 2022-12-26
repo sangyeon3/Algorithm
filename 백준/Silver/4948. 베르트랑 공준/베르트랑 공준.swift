@@ -4,7 +4,7 @@ var isPrime = [Bool](repeating: true, count: 250000)
 isPrime[0] = false
 isPrime[1] = false
 
-for i in 2..<250000 {
+for i in 2...500 {
     if !isPrime[i] { continue }
     for j in stride(from: 2*i, to: 250000, by: i) { isPrime[j] = false }
 }
