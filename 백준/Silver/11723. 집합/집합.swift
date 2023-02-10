@@ -35,6 +35,7 @@ let fileIO = FileIO()
 
 let N = fileIO.readInt()
 var arr = [Bool](repeating: false, count: 21)
+var result = ""
 
 for _ in 0..<N {
     let command = fileIO.readStirngSum()
@@ -48,7 +49,7 @@ for _ in 0..<N {
         arr[num] = false
     case 510:
         let num = fileIO.readInt()
-        print(arr[num] ? "1" : "0")
+        result.append(arr[num] ? "1\n" : "0\n")
     case 642:
         let num = fileIO.readInt()
         arr[num] = !arr[num]
@@ -60,3 +61,4 @@ for _ in 0..<N {
         break
     }
 }
+print(result)
