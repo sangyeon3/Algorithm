@@ -49,7 +49,7 @@ for _ in 0..<N {
         arr[num] = false
     case 510:
         let num = fileIO.readInt()
-        result.append(arr[num] ? "1\n" : "0\n")
+        result += arr[num] ? "1\n" : "0\n"
     case 642:
         let num = fileIO.readInt()
         arr[num] = !arr[num]
