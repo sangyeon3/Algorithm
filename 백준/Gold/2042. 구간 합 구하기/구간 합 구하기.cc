@@ -1,77 +1,41 @@
 #include <iostream>
+#include <vector>
 using namespace std;
+
 typedef long long ll;
 
-int N, M, K;
-int startIdx = 1;
-
+int n, m, k;
 ll tree[1024*1024*2];
+int base;
 
-void Input(){
-    cin >> N >> M >> K;
-
-    int tmp = N;
-    while(tmp > 0){
-        startIdx = startIdx << 1;
-        tmp = tmp >> 1;
+void update(ll idx, ll value) {
+    idx += base;
+    tree[idx] = value;
+    while (idx > 1) {
+        idx = idx >> 1;
+        tree[idx] = tree[idx*2] + tree[idx*2+1];
     }
-
-    // 리프노드 설정
-    for (int i = 0; i < N; i++)
-        cin >> tree[startIdx+i];
-
-    for (int i = startIdx+N; i < startIdx*2; i++)
-        tree[i] = 0;
-    
 }
 
-void Solution(){
+ll sum(ll left, ll right) {
+    left += base;
+    right += base;
+    ll res = 0;
 
-    // 인터널 노드 계산
-    int curIdx = startIdx >> 1;
-    while(curIdx > 0){
-        for(int i=0; i< curIdx; i++){
-            tree[curIdx+i] = tree[2*(curIdx+i)] + tree[2*(curIdx+i)+1];
+    while (left <= right) {
+        if ((left & 1) == 1) {
+            res += tree[left];
+            left++;
         }
-        curIdx = curIdx >> 1;
+        if ((right & 1) == 0) {
+            res += tree[right];
+            right--;
+        }
+        left = left >> 1;
+        right = right >> 1;
     }
 
-
-    // 업데이트 + 구간합 구하기
-    ll a, b, c;
-    for (int i = 0; i < M+K; i++)
-    {
-        cin >> a >> b >> c;
-        if(a==1){ // b번째 수를 c로 변경
-            tree[startIdx+b-1] = c;
-
-            int curIdx = (startIdx+b-1) >> 1;
-            while(curIdx > 0){
-                tree[curIdx] = tree[curIdx*2] + tree[curIdx*2 +1];
-                curIdx = curIdx >> 1;
-            }
-        }
-        else if(a==2){ // b번째 수부터 c번째 수까지의 합 출력
-            b = b + startIdx - 1;
-            c = c + startIdx - 1; 
-
-            ll sum = 0;
-            while(b <= c){
-                // b가 right_child라면
-                if((b&1) == 1) sum += tree[b];
-                // c가 left_child라면
-                if((c&1) == 0) sum += tree[c];
-
-                // a는 오른쪽부모, b는 왼쪽부모로 올라감
-                b = (b+1) >> 1;
-                c = (c-1) >> 1;
-            }
-            cout << sum << "\n";
-        }
-
-    }
-
-    return;
+    return res;
 }
 
 int main() {
@@ -80,8 +44,29 @@ int main() {
     cin.tie(NULL);
     cout.tie(NULL);
 
-    Input();    
-    Solution();
+    cin >> n >> m >> k;
 
+    for(base = 1; base < n; base = base << 1);
+
+    ll a, b, c;
+    // leaf init
+    for (int i = 0; i < n; i++) {
+        cin >> tree[base + i];
+    }
+
+    // other init
+    for (int i = base-1; i > 0; i--)
+        tree[i] = tree[i*2] + tree[i*2+1];
+
+    // run
+    for (int i = 0; i < m+k; i++) {
+        cin >> a >> b >> c;
+        if (a == 1) {
+            update(b-1, c);
+        } else {
+            cout << sum(b-1, c-1) << "\n";
+        }
+    }
+    
     return 0;
 }
