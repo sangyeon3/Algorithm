@@ -27,8 +27,8 @@ func solution(_ relation:[[String]]) -> Int {
     
     var arr = [[Int]]()
     
-    for row in 1...rowCount {
-        let indexCombinations = combination(Array(0..<columnCount), row)
+    for column in 1...columnCount {
+        let indexCombinations = combination(Array(0..<columnCount), column)
         for indexes in indexCombinations {
             let r = Set(relation.map{ r in
                 indexes.map { r[$0] }
