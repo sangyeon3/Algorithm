@@ -1,9 +1,5 @@
 import Foundation
-
-let t = Int(readLine()!)!
-
-for _ in 0..<t {
-    var arr = readLine()!.split(separator: " ").map{Int($0)!}
-    arr.sort(by: >)
-    print(arr[2])
+for _ in 0..<Int(r())! {
+    print(r().split{$0==" "}.map{Int($0)!}.sorted(by: >)[2])
 }
+func r()->String{readLine()!}
