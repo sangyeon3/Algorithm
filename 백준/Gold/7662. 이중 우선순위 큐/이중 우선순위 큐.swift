@@ -58,7 +58,7 @@ struct Heap<T> {
                 return .none
             }
             
-            if compare(heap[idx], heap[left]) && compare(heap[idx], heap[right]) {
+            if !compare(heap[left], heap[idx]) && !compare(heap[right], heap[idx]) {
                 return .none
             }
             
@@ -66,7 +66,7 @@ struct Heap<T> {
                 return compare(heap[left], heap[right]) ? .left : .right
             }
             
-            return compare(heap[left], heap[right]) ? .left : .right
+            return compare(heap[left], heap[idx]) ? .left : .right
         }
         
         var poppedIndex = 1
