@@ -5,84 +5,71 @@ struct Heap<T> {
     let compare: (T, T) -> Bool
     
     var count: Int {
-        heap.count <= 1 ? 0 : heap.count - 1
+        heap.count
     }
     
     var isEmpty: Bool {
-        count == 0
+        heap.isEmpty
     }
     
     var top: T? {
-        if isEmpty { return nil }
-        return heap[1]
+        isEmpty ? nil : heap[0]
     }
     
-    mutating func insert(_ data: T) {
-        if heap.isEmpty {
-            heap.append(data)
-            heap.append(data)
-            return
-        }
-        
-        var insertedIndex = heap.count
+    func parent(_ idx: Int) -> Int { (idx-1)/2 }
+    func left(_ idx: Int) -> Int { idx*2+1 }
+    func right(_ idx: Int) -> Int { (idx+1)*2 }
+    
+    mutating func append(_ data: T) {
         heap.append(data)
         
-        while insertedIndex > 1 {
-            if compare(heap[insertedIndex / 2], heap[insertedIndex]) {
+        var insertedIndex = heap.count - 1
+        while insertedIndex > 0 {
+            if compare(heap[insertedIndex], heap[parent(insertedIndex)]) {
+                heap.swapAt(insertedIndex, parent(insertedIndex))
+                insertedIndex = parent(insertedIndex)
+            } else {
                 break
             }
-            heap.swapAt(insertedIndex, insertedIndex / 2)
-            insertedIndex = insertedIndex / 2
         }
     }
-    
-    enum moveDownStatus { case none, left, right }
     
     @discardableResult
     mutating func pop() -> T? {
-        if isEmpty { return nil }
+        if heap.isEmpty { return nil }
         
-        let ret = heap[1]
-        heap.swapAt(1, heap.count - 1)
+        let ret = heap[0]
+        heap.swapAt(0, heap.count-1)
         heap.removeLast()
         
-        func moveDown(_ idx: Int) -> moveDownStatus {
-            let left = idx * 2, right = idx * 2 + 1
+        var poppedIndex = 0
+        while right(poppedIndex) < heap.count {
+            let (l, r, cur) = (heap[left(poppedIndex)], heap[right(poppedIndex)], heap[poppedIndex])
             
-            if left >= heap.count { return .none }
-            
-            if right >= heap.count {
-                if compare(heap[left], heap[idx]) { // 적극적, 질문 마니
-                    return .left
+            if compare(l, r) {
+                if compare(l, cur) {
+                    heap.swapAt(left(poppedIndex), poppedIndex)
+                    poppedIndex = left(poppedIndex)
+                } else {
+                    break
                 }
-                return .none
-            }
-            
-            if !compare(heap[left], heap[idx]) && !compare(heap[right], heap[idx]) {
-                return .none
-            }
-            
-            if compare(heap[left], heap[idx]) && compare(heap[right], heap[idx]) {
-                return compare(heap[left], heap[right]) ? .left : .right
-            }
-            
-            return compare(heap[left], heap[idx]) ? .left : .right
-        }
-        
-        var poppedIndex = 1
-        
-        while true {
-            switch moveDown(poppedIndex) {
-            case .none:
-                return ret
-            case .left:
-                heap.swapAt(poppedIndex, poppedIndex * 2)
-                poppedIndex = poppedIndex * 2
-            case .right:
-                heap.swapAt(poppedIndex, poppedIndex * 2 + 1)
-                poppedIndex = poppedIndex * 2 + 1
+            } else {
+                if compare(r, cur) {
+                    heap.swapAt(right(poppedIndex), poppedIndex)
+                    poppedIndex = right(poppedIndex)
+                } else {
+                    break
+                }
             }
         }
+        if left(poppedIndex) == heap.count - 1 {
+            if compare(heap[left(poppedIndex)], heap[poppedIndex]) {
+                heap.swapAt(left(poppedIndex), poppedIndex)
+                poppedIndex = left(poppedIndex)
+            }
+        }
+        
+        return ret
     }
 }
 
@@ -96,8 +83,8 @@ for _ in 0..<Int(readLine()!)! {
         let num = Int(input[1])!
 
         if input[0] == "I" {    // 삽입
-            maxHeap.insert(num)
-            minHeap.insert(num)
+            maxHeap.append(num)
+            minHeap.append(num)
             count[num] = (count[num] ?? 0) + 1
 
         } else if input[0] == "D" && num == 1 { // 최대값 삭제
