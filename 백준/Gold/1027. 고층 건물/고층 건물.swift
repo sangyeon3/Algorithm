@@ -9,20 +9,12 @@ for i in 0..<n-1 {
     count[i+1] += 1
     if i >= n-2 { continue }
     
+    var maxKi = Double(buildings[i+1] - buildings[i])
     for j in i+2..<n {
-        let a: Double = Double(buildings[j] - buildings[i]) / Double(j-i)
-        let b = Double(buildings[i]) - a * Double(i+1)
+        let ki: Double = Double(buildings[j] - buildings[i]) / Double(j-i)
         
-        var state = true
-        for k in i+1..<j {
-            let y = a * Double(k+1) + b
-            if Double(buildings[k]) >= y {
-                state = false
-                break
-            }
-        }
-        
-        if state {
+        if maxKi < ki {
+            maxKi = ki
             count[i] += 1
             count[j] += 1
         }
