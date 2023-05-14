@@ -1,12 +1,8 @@
 #include <iostream>
-#include <queue>
+#include <algorithm>
 using namespace std;
 
-struct compare {
-    bool operator()(int a, int b) {
-        return a > b;
-    }
-};
+int arr[5000001];
 
 int main() {
 
@@ -17,27 +13,12 @@ int main() {
     int n, k;
     cin >> n >> k;
 
-    priority_queue<int> pq;
-    int a;
-    for (int i = 0; i < k; i++)
-    {
-        cin >> a;
-        pq.push(a);
-    }
-    
-    for (int i = 0; i < n-k; i++)
-    {
-        cin >> a;
-        pq.push(a);
-        // cout << pq.top() << "\n";
-        pq.pop();
-    }
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
 
-    // for (int i = 0; i < k-1; i++)
-    // {
-    //     pq.pop();
-    // }
-    cout << pq.top();
+    sort(arr, arr+n);
+    
+    cout << arr[k-1];
 
     return 0;
 }
