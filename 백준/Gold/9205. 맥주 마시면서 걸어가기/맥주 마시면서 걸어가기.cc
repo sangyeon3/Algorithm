@@ -1,7 +1,7 @@
 #include <iostream>
-#include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <queue>
 using namespace std;
 
 typedef pair<int, int> pii;
@@ -9,11 +9,6 @@ typedef pair<int, int> pii;
 int n;
 pii home, festival;
 pii store[101];
-pii distances[101]; // store index, distance
-
-bool compare(pii a, pii b) {
-    return a.second < b.second;
-}
 
 void Input() {
     cin >> n;
@@ -26,8 +21,6 @@ void Input() {
     {
         cin >> a >> b;
         store[i] = make_pair(a, b);
-        int d = abs(a - home.first) + abs(b - home.second);
-        distances[i] = make_pair(i, d);
     }
 
     cin >> a >> b;
@@ -36,30 +29,33 @@ void Input() {
 
 bool visited[101];
 
-bool dfs(int y, int x) {
-    int d = abs(festival.first - y) + abs(festival.second - x);
-    if (d <= 1000) {
-        return true;
-    }
-    for (int i = 0; i < n; i++)
-    {
-        if (visited[i]) continue;
-        
-        int distance = abs(store[i].first - y) + abs(store[i].second - x);
-        if (distance > 1000) continue;
+bool bfs() {
+    queue<pii> q;
+    q.push(home);
 
-        visited[i] = true;
-        if (dfs(store[i].first, store[i].second)) {
+    while (!q.empty()) {
+        int y = q.front().first, x = q.front().second;
+        q.pop();
+
+        if ((abs(y - festival.first) + abs(x - festival.second)) <= 1000) { 
             return true;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            if (visited[i]) continue;
+
+            int ny = store[i].first, nx = store[i].second;
+            if (abs(ny - y) + abs(nx - x) > 1000) continue;
+
+            visited[i] = true;
+            q.push(make_pair(ny, nx));
         }
     }
     return false;
 }
 
 void Solution() {
-    sort(distances, distances + n, compare);
-    // cout << distances[0].second << " dss\n";
-    if (dfs(home.first, home.second)) {
+    if (bfs()) {
         cout << "happy\n";
     } else {
         cout << "sad\n";
